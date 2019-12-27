@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+    section {
+      border-bottom: 1px solid #ddd;
+    }
+    p {
+      margin-top: 0;
+      margin-bottom: 7px;
+    }
+    .heading {
+      font-weight: bold;
+      font-size: 10px;
+      color: #08b;
+      margin-bottom: 0;
+    }
+    .input-item {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h2 class="heading">選択中のシート名</h2>
+      <p><?= data.name ?></p>
+    </section>
+    <section>
+      <h2 class="heading">ファイルを書き出すフォルダID</h2>
+      <p><input type="text" id="folderIdInput" class="input-item"></p>
+    </section>
+    <section>
+      <h2 class="heading">ファイルの出力形式</h2>
+      <p>
+        <select id="fileTypeInput" class="input-item">
+          <option value="PLAIN_TEXT">PLAIN_TEXT</option>
+          <option value="HTML">HTML</option>
+          <option value="CSS">CSS</option>
+          <option value="JAVASCRIPT">JAVASCRIPT</option>
+        </select>
+      </p>
+    </section>
+    <section>
+      <h2 class="heading">テンプレートテキスト</h2>
+      <p><input type="file" id="templateStrInput"></p>
+      <!-- テキストボックスを利用する場合 -->
+      <!-- <p><textarea id="templateStrInput" class="input-item"></textarea></p> -->
+    </section>
+    <section>
+      <h2 class="heading">データの「fileName」を反映する</h2>
+      <p><input type="checkbox" id="fileNameInput"></p>
+    </section>
+    <section>
+      <h2 class="heading">ファイル名末尾に日付を付与する</h2>
+      <p><input type="checkbox" id="fileDateInput"></p>
+    </section>
+    <p><button onclick="runTask()" class="button">実行</button></p>
+    <script>
+    var folderId;
+    var fileType;
+    var templateStr;
+    var dataRange = <?= data.dataRange ?>;
+    var fileName;
+    var fileDate;
+    function runTask() {
+      setValue();
+      google.script.run.runMakeFile(folderId, fileType, templateStr, dataRange, fileName, fileDate);
+    }
+    // 各入力値の代入
+    function setValue() {
+      folderId = document.getElementById('folderIdInput').value;
+      fileType = document.getElementById('fileTypeInput').value;
+      fileName = document.getElementById('fileNameInput').checked;
+      fileDate = document.getElementById('fileDateInput').checked;
+      // テキストボックスを利用する場合
+      // templateStr = document.getElementById('templateStrInput').value;
+    }
+    // テンプレートファイルの読み込み
+    var templateStrInput = document.getElementById('templateStrInput');
+    templateStrInput.addEventListener('change', loadText, false);
+    function loadText(e) {
+      var reader = new FileReader();
+      reader.readAsText(e.target.files[0]);
+      reader.onload = function() {
+        templateStr = reader.result;
+      }
+    }
+    </script>
+  </body>
+</html>
